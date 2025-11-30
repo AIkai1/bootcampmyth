@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COLUMBIDAE - The Pigeon Who Became GOD</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Garamond', 'Georgia', serif;
+            color: #e8dcc4;
+            background: #0a0a0a;
+            overflow-x: hidden;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        body.loaded {
+            opacity: 1;
+        }
+        
+        .eyes-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 60px;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .eye {
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(ellipse, #d4af37 0%, #8b7500 70%, #3d3200 100%);
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            pointer-events: auto;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+       
+        .pupil {
+            width: 25px;
+            height: 25px;
+            background: #000;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+        
+        .pupil::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            top: 8px;
+            left: 4px;
+        }
+        
+        .eyelid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            top: -100%;
+            left: 0;
+            transition: top 0.15s ease;
+        }
+        
+        .eye.blink .eyelid {
+            top: 0;
+        }
+        
+        .beak-container {
+            position: absolute;
+            top: calc(50% + 40px);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .beak-top {
+            width: 0;
+            height: 0;
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-bottom: 22px solid #d4af37;
+            position: relative;
+            transform-origin: bottom center;
+        }
+        
+        .beak-top::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: -3px;
+            width: 6px;
+            height: 4px;
+            background: #1a1a1a;
+            border-radius: 50%;
+        }
+        
+        .beak-bottom {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 16px solid #8b7500;
+            position: relative;
+            left: 4px;
+            transform-origin: top center;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 120px 80px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .title {
+            text-align: center;
+            margin-bottom: 80px;
+            opacity: 0;
+        }
+        
+        .title h1 {
+            font-size: 3.5rem;
+            font-weight: 400;
+            letter-spacing: 8px;
+            color: #d4af37;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .title .subtitle {
+            font-size: 1.3rem;
+            letter-spacing: 4px;
+            color: #b8a07e;
+            font-style: italic;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .story p {
+            font-size: 1.4rem;
+            line-height: 2.2;
+            margin-bottom: 100px;
+            letter-spacing: 1px;
+            opacity: 0;
+            padding: 0 40px;
+            max-width: 100%;
+            word-spacing: 2px;
+        }
+        
+        .story p:nth-child(odd) {
+            text-align: left;
+            text-align-last: left;
+            transform: translateX(-150px);
+            padding-right: 300px;
+            padding-left: 40px;
+        }
+        
+        .story p:nth-child(even) {
+            text-align: right;
+            text-align-last: right;
+            transform: translateX(150px);
+            padding-left: 300px;
+            padding-right: 40px;
+        }
+        
+        .columbidae {
+            color: #d4af37;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+        
+        .divider {
+            width: 100px;
+            height: 2px;
+            background: #d4af3700;
+            margin: 60px auto;
+            opacity: 0;
+            transform: scaleX(0);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 60px 20px;
+            }
+            
+            .title h1 {
+                font-size: 2rem;
+                letter-spacing: 4px;
+            }
+            
+            .title .subtitle {
+                font-size: 1rem;
+                letter-spacing: 2px;
+            }
+            
+            .story p {
+                font-size: 1.1rem;
+                line-height: 1.8;
+                padding: 0 10px !important;
+            }
+            
+            .story p:nth-child(odd),
+            .story p:nth-child(even) {
+                transform: translateX(0);
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="eyes-container">
+        <div class="eye left-eye">
+            <div class="pupil"></div>
+            <div class="eyelid"></div>
+        </div>
+        <div class="eye right-eye">
+            <div class="pupil"></div>
+            <div class="eyelid"></div>
+        </div>
+        <div class="beak-container">
+            <div class="beak-top"></div>
+            <div class="beak-bottom"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="title">
+            <h1>COLUMBIDAE</h1>
+            <div class="subtitle"></div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="story">
+        </div>
+        
+        <div class="divider"></div>
+    </div>
+    
+    <script>
+        window.onbeforeunload = function () {
+            window.scrollTo(0, 0);
+        };
+        
+        if (history.scrollRestoration) {
+            history.scrollRestoration = 'manual';
+        }
+        window.scrollTo(0, 0);
+        
+        gsap.registerPlugin(ScrollTrigger);
+        
+        window.addEventListener('load', () => {
+            document.body.classList.add('loaded');
+        });
+        
+        const titleText = document.querySelector('.title h1');
+        const titleLetters = titleText.textContent.split('');
+        titleText.innerHTML = titleLetters.map(letter => 
+            letter === ' ' ? ' ' : `<span style="display: inline-block; opacity: 0; transform: translateY(50px) rotateX(-90deg);">${letter}</span>`
+        ).join('');
+        
+        gsap.to('.title', {
+            opacity: 1,
+            duration: 1,
+            delay: 0.8,
+            ease: 'power2.out'
+        });
+        
+        gsap.to('.title h1 span', {
+            opacity: 1,
+            y: 0,
+            rotationX: 0,
+            duration: 1,
+            stagger: 0.05,
+            delay: 1,
+            ease: 'back.out(2)'
+        });
+        
+        gsap.to('.title .subtitle', {
+            opacity: 1,
+            y: 0,
+            duration: 1.5,
+            delay: 2,
+            ease: 'power2.out'
+        });
+        
+        gsap.to('.divider:first-of-type', {
+            opacity: 1,
+            scaleX: 1,
+            duration: 1.5,
+            delay: 2.5,
+            ease: 'power3.inOut',
+            transformOrigin: 'center'
+        });
+        
+        gsap.utils.toArray('.story p').forEach((paragraph, i) => {
+            const isEven = i % 2 === 0;
+            const slideDistance = isEven ? 150 : -150;
+            
+            gsap.fromTo(paragraph, 
+                {
+                    opacity: 0,
+                    x: slideDistance
+                },
+                {
+                    opacity: 1,
+                    x: 0,
+                    duration: 1,
+                    ease: 'power2.out',
+                    scrollTrigger: {
+                        trigger: paragraph,
+                        start: 'top 85%',
+                        end: 'top 30%',
+                        scrub: 1.5,
+                        toggleActions: 'play reverse play reverse'
+                    }
+                }
+            );
+        });
+        
+        gsap.fromTo('.divider:last-of-type',
+            {
+                opacity: 0,
+                scaleX: 0,
+                rotation: 0
+            },
+            {
+                opacity: 1,
+                scaleX: 1,
+                rotation: 360,
+                duration: 1,
+                ease: 'power2.inOut',
+                scrollTrigger: {
+                    trigger: '.divider:last-of-type',
+                    start: 'top 90%',
+                    end: 'top 60%',
+                    scrub: 1,
+                    toggleActions: 'play reverse play reverse'
+                }
+            }
+        );
+        
+        gsap.utils.toArray('.columbidae').forEach(columbidae => {
+            gsap.to(columbidae, {
+                y: -8,
+                duration: 2,
+                repeat: -1,
+                yoyo: true,
+                ease: 'sine.inOut'
+            });
+            
+            gsap.to(columbidae, {
+                textShadow: '0 0 20px rgba(212, 175, 55, 0.8), 0 0 40px rgba(212, 175, 55, 0.4)',
+                duration: 1.5,
+                repeat: -1,
+                yoyo: true,
+                ease: 'sine.inOut'
+            });
+        });
+
+        const eyes = document.querySelectorAll('.eye');
+        const pupils = document.querySelectorAll('.pupil');
+        let isMouseMoving = false;
+        let mouseTimeout;
+        
+        function lookAround() {
+            if (isMouseMoving) {
+                gsap.delayedCall(0.5, lookAround);
+                return;
+            }
+            
+            const randomX = gsap.utils.random(-12, 12);
+            const randomY = gsap.utils.random(-8, 8);
+            
+            gsap.to(pupils, {
+                x: randomX,
+                y: randomY,
+                duration: gsap.utils.random(0.6, 1.2),
+                ease: 'sine.inOut',
+                onComplete: () => {
+                    gsap.delayedCall(gsap.utils.random(0.3, 1.2), lookAround);
+                }
+            });
+        }
+        
+        gsap.delayedCall(1, lookAround);
+        
+        function blink() {
+            eyes.forEach(eye => {
+                eye.classList.add('blink');
+                setTimeout(() => {
+                    eye.classList.remove('blink');
+                }, 150);
+            });
+            
+            gsap.delayedCall(gsap.utils.random(2, 6), blink);
+        }
+        
+        gsap.delayedCall(2, blink);
+        
+        document.addEventListener('mousemove', (e) => {
+            isMouseMoving = true;
+            clearTimeout(mouseTimeout);
+            
+            const eyesContainer = document.querySelector('.eyes-container');
+            const rect = eyesContainer.getBoundingClientRect();
+            const eyesCenterX = rect.left + rect.width / 2;
+            const eyesCenterY = rect.top + rect.height / 2;
+            
+            const deltaX = (e.clientX - eyesCenterX) / 60;
+            const deltaY = (e.clientY - eyesCenterY) / 60;
+            
+            const clampedX = gsap.utils.clamp(-10, 10, deltaX);
+            const clampedY = gsap.utils.clamp(-6, 6, deltaY);
+            
+            gsap.to(pupils, {
+                x: clampedX,
+                y: clampedY,
+                duration: 0.3,
+                ease: 'power2.out',
+                overwrite: 'auto'
+            });
+            
+            mouseTimeout = setTimeout(() => {
+                isMouseMoving = false;
+            }, 2000);
+        });
+        
+        const beakTop = document.querySelector('.beak-top');
+        const beakBottom = document.querySelector('.beak-bottom');
+        
+        function animateBeak() {
+            const openAmount = gsap.utils.random(8, 18);
+            const duration = gsap.utils.random(0.15, 0.3);
+            
+            gsap.to(beakTop, {
+                rotation: -openAmount,
+                duration: duration,
+                ease: 'power2.out'
+            });
+            gsap.to(beakBottom, {
+                rotation: openAmount * 1.2,
+                y: openAmount * 0.3,
+                duration: duration,
+                ease: 'power2.out',
+                onComplete: () => {
+                    gsap.delayedCall(gsap.utils.random(0.1, 0.25), () => {
+                        gsap.to(beakTop, {
+                            rotation: 0,
+                            duration: duration * 0.8,
+                            ease: 'power2.inOut'
+                        });
+                        gsap.to(beakBottom, {
+                            rotation: 0,
+                            y: 0,
+                            duration: duration * 0.8,
+                            ease: 'power2.inOut'
+                        });
+                    });
+                }
+            });
+            
+            gsap.delayedCall(gsap.utils.random(2, 6), animateBeak);
+        }
+        
+        gsap.delayedCall(3, animateBeak);
+        
+        function beakChatter() {
+            let count = 0;
+            const maxChatter = Math.floor(gsap.utils.random(3, 7));
+            
+            function chatter() {
+                if (count >= maxChatter) {
+                    gsap.delayedCall(gsap.utils.random(6, 12), beakChatter);
+                    return;
+                }
+                
+                const smallOpen = gsap.utils.random(5, 12);
+                const quickDuration = gsap.utils.random(0.06, 0.1);
+                
+                gsap.to(beakTop, {
+                    rotation: -smallOpen,
+                    duration: quickDuration,
+                    ease: 'power1.out',
+                    onComplete: () => {
+                        gsap.to(beakTop, {
+                            rotation: 0,
+                            duration: quickDuration,
+                            ease: 'power1.in'
+                        });
+                    }
+                });
+                gsap.to(beakBottom, {
+                    rotation: smallOpen,
+                    y: smallOpen * 0.2,
+                    duration: quickDuration,
+                    ease: 'power1.out',
+                    onComplete: () => {
+                        gsap.to(beakBottom, {
+                            rotation: 0,
+                            y: 0,
+                            duration: quickDuration,
+                            ease: 'power1.in'
+                        });
+                        count++;
+                        gsap.delayedCall(gsap.utils.random(0.08, 0.18), chatter);
+                    }
+                });
+            }
+            
+            chatter();
+        }
+        
+        gsap.delayedCall(5, beakChatter);
+    </script>
+</body>
+</html>
